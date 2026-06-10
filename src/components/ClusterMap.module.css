@@ -1,0 +1,42 @@
+/* zoom-out affordance shown when drilled into a node */
+.cluster-map__back {
+  position: fixed;
+  top: calc(var(--topbar-h, 46px) + 14px);
+  left: calc(var(--dock-w, 64px) + 18px);
+  z-index: 36;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  appearance: none;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--tx-2);
+  background: var(--panel);
+  backdrop-filter: blur(14px) saturate(1.1);
+  -webkit-backdrop-filter: blur(14px) saturate(1.1);
+  border: 1px solid var(--line-2);
+  border-radius: 7px;
+  padding: 7px 11px;
+}
+.cluster-map__back:hover {
+  color: var(--tx);
+  border-color: var(--line-strong);
+}
+
+/* shown when the cluster fetch fails */
+.cluster-map__error {
+  position: fixed;
+  top: calc(var(--topbar-h, 46px) + 14px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 36;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: rgb(var(--h-crit));
+  background: var(--panel);
+  border: 1px solid rgba(251, 90, 82, 0.4);
+  border-radius: 7px;
+  padding: 7px 12px;
+}

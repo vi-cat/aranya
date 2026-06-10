@@ -1,0 +1,112 @@
+/* ===================== ARANYA / clusterdOS — global tokens + theming =====================
+   Component styling lives in per-component *.module.css files. This file holds only the
+   inherently-global pieces: design tokens (:root), heat-spectrum theme variants selected via
+   body[data-spectrum], and the base reset. */
+
+:root {
+  /* surfaces */
+  --bg: #070a0f;
+  --bg-2: #0a0e15;
+  --panel: rgba(14, 19, 27, 0.72);
+  --panel-solid: #0d121a;
+  --panel-hi: rgba(22, 29, 40, 0.82);
+  --line: rgba(125, 146, 172, 0.14);
+  --line-2: rgba(125, 146, 172, 0.26);
+  --line-strong: rgba(140, 165, 195, 0.42);
+  /* text */
+  --tx: #dbe3ec;
+  --tx-2: #8a97a8;
+  --tx-3: #5a6675;
+  --tx-4: #3f4a58;
+  /* accent (UI highlight) */
+  --ac: #46b6c6;
+  --ac-dim: rgba(70, 182, 198, 0.16);
+  /* attention / warning accent (badges, the hex alert glyph) */
+  --c-attn: #e6a84e;
+  --c-attn-ink: #1a1208;
+  /* heat spectrum (load: low -> high), overridable per-theme on body.
+     default = "aranya": indigo -> blue -> violet -> magenta -> hot pink */
+  --h-idle: 52, 73, 138;
+  --h-nominal: 90, 111, 204;
+  --h-elevated: 154, 94, 206;
+  --h-hot: 217, 87, 160;
+  --h-crit: 251, 90, 82;
+  --h-off: 74, 86, 102;
+  --glow-crit: rgba(251, 90, 82, 0.55);
+  --grid: rgba(120, 150, 185, 0.05);
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --font-sans: "IBM Plex Sans", system-ui, sans-serif;
+}
+
+/* theme: thermal (blue -> cyan -> gold -> amber -> red) */
+body[data-spectrum="thermal"] {
+  --h-idle: 46, 118, 168;
+  --h-nominal: 60, 190, 206;
+  --h-elevated: 232, 206, 116;
+  --h-hot: 232, 150, 68;
+  --h-crit: 228, 84, 66;
+  --glow-crit: rgba(232, 120, 60, 0.55);
+}
+/* theme: ice (deep blue -> pale blue -> warm sand -> coral) */
+body[data-spectrum="ice"] {
+  --h-idle: 40, 90, 144;
+  --h-nominal: 74, 148, 204;
+  --h-elevated: 172, 210, 236;
+  --h-hot: 230, 202, 150;
+  --h-crit: 228, 120, 88;
+  --glow-crit: rgba(228, 120, 88, 0.5);
+}
+/* theme: mono (grayscale heat, warm critical) */
+body[data-spectrum="mono"] {
+  --h-idle: 70, 84, 100;
+  --h-nominal: 120, 138, 158;
+  --h-elevated: 168, 182, 198;
+  --h-hot: 214, 222, 234;
+  --h-crit: 236, 150, 96;
+  --glow-crit: rgba(236, 150, 96, 0.55);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+html,
+body {
+  height: 100%;
+}
+body {
+  /* lit base gradient for the map canvas — gives the faint grid/scan textures something
+     to read against (previously lived on the #stage wrapper, now full-window) */
+  background: radial-gradient(120% 90% at 38% 30%, #0c121b 0%, #080b11 52%, #05070b 100%);
+  color: var(--tx);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+/* ---- scrollbars (themed, applied to every scrollable surface) ---- */
+* {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: rgba(125, 146, 172, 0.3) transparent;
+}
+/* WebKit / Chromium — forces a visible scrollbar (macOS hides the overlay one otherwise) */
+::-webkit-scrollbar {
+  width: 11px;
+  height: 11px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(125, 146, 172, 0.28);
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(125, 146, 172, 0.45);
+  background-clip: padding-box;
+}

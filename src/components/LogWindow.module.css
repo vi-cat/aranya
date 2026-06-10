@@ -1,0 +1,207 @@
+/* bottom console drawer — mirrors the prototype #console look */
+.log {
+  position: fixed;
+  left: var(--dock-w, 64px);
+  right: 0;
+  bottom: 0;
+  height: 240px;
+  z-index: 35;
+  display: flex;
+  flex-direction: column;
+  background: rgba(8, 11, 17, 0.92);
+  backdrop-filter: blur(16px) saturate(1.1);
+  -webkit-backdrop-filter: blur(16px) saturate(1.1);
+  border-top: 1px solid var(--line-2);
+  box-shadow: 0 -14px 34px rgba(0, 0, 0, 0.5);
+}
+
+.log__header {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 9px 16px;
+  border-bottom: 1px solid var(--line);
+}
+.log__title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+.log__status {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex: none;
+  background: rgb(var(--h-nominal));
+  box-shadow: 0 0 7px rgb(var(--h-nominal));
+}
+@media (prefers-reduced-motion: no-preference) {
+  .log__status--live {
+    animation: log-live-pulse 1.6s ease-in-out infinite;
+  }
+}
+@keyframes log-live-pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+.log__live {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgb(var(--h-nominal));
+  flex: none;
+}
+.log__name {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--tx);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.log__namespace {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tx-3);
+  border: 1px solid var(--line-2);
+  border-radius: 4px;
+  padding: 2px 6px;
+  flex: none;
+}
+.log__container {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--panel-solid);
+  border: 1px solid var(--line-2);
+  border-radius: 6px;
+  padding: 0 8px;
+  cursor: pointer;
+}
+.log__container:hover {
+  border-color: var(--line-strong);
+}
+.log__container-icon {
+  width: 13px;
+  height: 13px;
+  flex: none;
+  color: var(--tx-3);
+}
+.log__select {
+  appearance: none;
+  background: none;
+  color: var(--tx-2);
+  border: none;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 4px 2px 4px 0;
+  cursor: pointer;
+}
+.log__select:focus-visible {
+  outline: none;
+}
+.log__close {
+  appearance: none;
+  border: none;
+  background: none;
+  color: var(--tx-3);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
+}
+.log__close:hover {
+  color: var(--tx);
+}
+/* when there's no container <select>, push the close button to the right */
+.log__header .log__close:nth-child(2) {
+  margin-left: auto;
+}
+
+.log__body {
+  flex: 1;
+  overflow: auto;
+  padding: 10px 16px;
+}
+.log__output {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  line-height: 1.55;
+  color: var(--tx-2);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* floating auto-scroll toggle (bottom-right of the drawer) */
+.log__autoscroll {
+  position: absolute;
+  right: 16px;
+  bottom: 12px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  appearance: none;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tx-3);
+  background: var(--panel-solid);
+  border: 1px solid var(--line-2);
+  border-radius: 7px;
+  padding: 6px 10px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+}
+.log__autoscroll:hover {
+  color: var(--tx-2);
+  border-color: var(--line-strong);
+}
+.log__autoscroll--active {
+  color: var(--ac);
+  border-color: rgba(70, 182, 198, 0.42);
+}
+.log__checkbox {
+  width: 13px;
+  height: 13px;
+  border-radius: 4px;
+  border: 1px solid var(--line-strong);
+  display: grid;
+  place-items: center;
+  transition: 0.12s;
+}
+.log__checkbox::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  background: var(--ac);
+  transform: scale(0);
+  transition: transform 0.12s ease;
+}
+.log__autoscroll--active .log__checkbox {
+  border-color: var(--ac);
+  background: var(--ac-dim);
+}
+.log__autoscroll--active .log__checkbox::after {
+  transform: scale(1);
+}
+.log__placeholder {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--tx-3);
+}
+.log__error {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: rgb(var(--h-crit));
+}

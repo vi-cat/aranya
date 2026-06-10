@@ -1,0 +1,72 @@
+/* top bar — sits to the right of the 64px dock */
+.topbar {
+  position: absolute;
+  top: 0;
+  left: 64px;
+  right: 0;
+  height: 46px;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 0 18px;
+  background: linear-gradient(
+    180deg,
+    rgba(9, 13, 19, 0.92),
+    rgba(9, 13, 19, 0.62)
+  );
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(10px);
+}
+
+.topbar__kpis {
+  margin-left: auto;
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+}
+.topbar__kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 16px;
+  border-left: 1px solid var(--line);
+}
+.topbar__key {
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  letter-spacing: 0.14em;
+  color: var(--tx-3);
+  text-transform: uppercase;
+}
+.topbar__value {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--tx);
+  letter-spacing: 0.01em;
+}
+.topbar__value small {
+  color: var(--tx-3);
+  font-size: 10px;
+}
+.topbar__value--accent {
+  color: var(--ac);
+}
+.topbar__value--warn {
+  color: rgb(var(--h-hot));
+}
+.topbar__alert {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 7px;
+}
+.topbar__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgb(var(--h-nominal));
+  box-shadow: 0 0 8px rgb(var(--h-nominal));
+  margin-left: 4px;
+}

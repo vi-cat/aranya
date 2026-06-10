@@ -1,0 +1,241 @@
+/* ============================ HEX TILE ============================
+   Heat colour is chosen by a single band modifier (.hex--idle/.../.hex--off): each points
+   --tile at a spectrum variable and --fill-a at a fill density. The only per-tile inline
+   style is layout position (left/top), set by HexGrid. */
+
+.hex {
+  position: absolute;
+  width: var(--hex-w);
+  height: var(--hex-h);
+  /* button reset */
+  appearance: none;
+  border: none;
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  color: var(--tx);
+  /* shape + layout of contents */
+  clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  /* rim (edge) opacity — overridable per state so at-rest tiles can sit darker */
+  --rim-hi: 0.92;
+  --rim-lo: 0.5;
+  background: linear-gradient(180deg, rgba(var(--tile), var(--rim-hi)), rgba(var(--tile), var(--rim-lo)));
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.32));
+  transition: filter 0.2s ease, transform 0.2s ease;
+}
+
+/* ---- heat bands: modifier -> spectrum colour + fill density ---- */
+.hex--idle {
+  --tile: var(--h-idle);
+  --fill-a: 0.1;
+}
+.hex--nominal {
+  --tile: var(--h-nominal);
+  --fill-a: 0.16;
+}
+.hex--elevated {
+  --tile: var(--h-elevated);
+  --fill-a: 0.24;
+}
+.hex--hot {
+  --tile: var(--h-hot);
+  --fill-a: 0.3;
+}
+.hex--crit {
+  --tile: var(--h-crit);
+  --fill-a: 0.34;
+}
+.hex--off {
+  --tile: var(--h-off);
+  --fill-a: 0.06;
+  cursor: default;
+}
+
+/* at-rest tiles (zero load) sit darker/quieter than low-load active tiles of the same band */
+.hex--rest {
+  --fill-a: 0.05;
+  --rim-hi: 0.46;
+  --rim-lo: 0.24;
+}
+
+/* gel body: translucent fill + gentle volume */
+.hex::before {
+  content: "";
+  position: absolute;
+  inset: 1.6px;
+  clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
+  background:
+    linear-gradient(0deg, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0) 46%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0) 50%),
+    rgba(var(--tile), var(--fill-a));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.17), inset 0 -6px 9px -7px rgba(0, 0, 0, 0.22);
+}
+/* clean top sheen */
+.hex::after {
+  content: "";
+  position: absolute;
+  inset: 1.6px;
+  clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0) 26%);
+  pointer-events: none;
+}
+
+/* offline: neutral, hatched */
+.hex--off::before {
+  background: rgba(var(--h-off), 0.08);
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(var(--h-off), 0.18) 0 6px,
+    transparent 6px 12px
+  );
+}
+
+.hex:not(.hex--off):hover {
+  transform: translateY(-1.5px) scale(1.02);
+  z-index: 5;
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 12px rgba(var(--tile), 0.45));
+}
+.hex:focus-visible {
+  outline: none;
+  z-index: 5;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.32)) drop-shadow(0 0 10px var(--ac));
+}
+
+/* ---- contents ---- */
+.hex__id {
+  position: absolute;
+  top: 13px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  color: var(--tx-2);
+  opacity: 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7), 0 0 3px rgba(0, 0, 0, 0.5);
+  z-index: 3;
+}
+.hex:hover .hex__id {
+  opacity: 1;
+}
+:global(body[data-nodeids="on"]) .hex__id {
+  opacity: 1;
+}
+.hex--selected .hex__id {
+  color: var(--ac);
+}
+
+.hex__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+
+/* "at rest" tiles show the glyph and hide the details, until hovered/focused */
+.hex--rest .hex__body {
+  display: none;
+}
+.hex--rest:hover .hex__body,
+.hex--rest:focus-visible .hex__body {
+  display: flex;
+}
+.hex--rest:hover .hex__glyph,
+.hex--rest:focus-visible .hex__glyph {
+  display: none;
+}
+.hex__util {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 25px;
+  letter-spacing: -0.01em;
+  color: var(--tx);
+  line-height: 1;
+}
+.hex__util .hex__pct {
+  font-size: 0.52em;
+  color: var(--tx-2);
+  margin-left: 1px;
+}
+.hex__sub {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--tx-2);
+  letter-spacing: 0.02em;
+  display: flex;
+  gap: 7px;
+  margin-top: 2px;
+}
+.hex__sub .hex__dot {
+  color: var(--tx-4);
+}
+.hex--off .hex__util {
+  color: var(--tx-4);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+}
+
+/* at-rest closed-eye glyph, tinted by the band colour */
+.hex__glyph {
+  display: flex;
+  color: rgba(var(--tile), 0.85);
+}
+.hex__glyph svg {
+  width: 54px;
+  height: 54px;
+  display: block;
+}
+
+/* selection ring overlay */
+.hex__ring {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+.hex__ring svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+/* selection adds the ring outline (.hex__ring) only — the tile colour is left untouched */
+
+/* critical: stronger glow + pulse */
+.hex--crit {
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 8px rgba(var(--tile), 0.6));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hex {
+    animation: hex-in 0.42s cubic-bezier(0.2, 0.7, 0.3, 1) backwards;
+  }
+  .hex--crit {
+    animation:
+      hex-in 0.42s cubic-bezier(0.2, 0.7, 0.3, 1) backwards,
+      hex-pulse 2.4s ease-in-out infinite;
+  }
+}
+
+@keyframes hex-in {
+  from {
+    transform: scale(0.9);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+@keyframes hex-pulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 5px rgba(var(--tile), 0.6));
+  }
+  50% {
+    filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 13px rgba(var(--tile), 0.85));
+  }
+}

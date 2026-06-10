@@ -1,0 +1,33 @@
+/* map canvas background textures */
+.map__layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.map__layer--grid {
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(80% 70% at 42% 42%, #000 30%, transparent 100%);
+}
+.map__layer--vignette {
+  background: radial-gradient(120% 100% at 42% 40%, transparent 40%, rgba(0, 0, 0, 0.55) 100%);
+}
+.map__layer--scan {
+  background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.012) 0 1px, transparent 1px 3px);
+  opacity: 0.6;
+}
+:global(body[data-bg="topo"]) .map__layer--grid {
+  background-image: radial-gradient(circle at center, var(--grid) 1px, transparent 1.4px);
+  background-size: 26px 26px;
+}
+:global(body[data-bg="flat"]) .map__layer--grid {
+  display: none;
+}
+
+/* hex tiles are rendered here (passed as children) */
+.map__hexes {
+  position: absolute;
+  inset: 0;
+}

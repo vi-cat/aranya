@@ -1,0 +1,9 @@
+/* The hex layer. Inset to clear the dock + top bar so the centred blob never tucks
+   under the chrome. Tile dimensions come in as custom properties from JS. */
+.hex-grid {
+  position: absolute;
+  top: var(--topbar-h, 46px);
+  right: 0;
+  bottom: 0;
+  left: var(--dock-w, 64px);
+}

@@ -1,0 +1,178 @@
+/* ===================== OS dock ===================== */
+.dock {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 64px;
+  z-index: 45;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 14px;
+  padding: 10px 12px 12px;
+  background: linear-gradient(180deg, #0a0e15, #070a10);
+  border-right: 1px solid var(--line-2);
+  box-shadow: 2px 0 16px rgba(0, 0, 0, 0.4);
+  transition: width 0.22s cubic-bezier(0.3, 0.7, 0.3, 1);
+  overflow: hidden;
+}
+.dock:hover {
+  width: 198px;
+}
+.dock__home {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 4px;
+  color: #9d6cf0;
+  filter: drop-shadow(0 0 7px rgba(157, 108, 240, 0.45));
+}
+.dock__home svg {
+  width: 30px;
+  height: 30px;
+  display: block;
+  flex: none;
+}
+.dock__wordmark {
+  font-family: "Saira", var(--font-sans);
+  font-weight: 800;
+  font-size: 17px;
+  letter-spacing: 0.12em;
+  color: var(--tx);
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.16s ease 0.02s;
+}
+.dock:hover .dock__wordmark {
+  opacity: 1;
+}
+.dock__apps {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 5px;
+  margin-top: 4px;
+}
+.dock__bottom {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+}
+.dock__app {
+  position: relative;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  cursor: pointer;
+  padding: 0 9px;
+  background: none;
+  border: none;
+  color: var(--tx-3);
+  border-radius: 10px;
+  transition: color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+.dock__app svg {
+  width: 22px;
+  height: 22px;
+  display: block;
+  flex: none;
+}
+.dock__app .dock__label {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  opacity: 0;
+  transition: opacity 0.16s ease 0.02s;
+}
+.dock:hover .dock__app .dock__label {
+  opacity: 1;
+}
+.dock__app:hover {
+  color: var(--tx);
+  background: rgba(125, 146, 172, 0.07);
+}
+.dock__app--active {
+  color: var(--ac);
+  background: var(--ac-dim);
+}
+.dock__app--active::before {
+  content: "";
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 18px;
+  border-radius: 0 2px 2px 0;
+  background: var(--ac);
+  box-shadow: 0 0 8px var(--ac);
+}
+.dock__badge {
+  position: absolute;
+  top: 5px;
+  left: 27px;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 3px;
+  border-radius: 8px;
+  background: #e0a052;
+  color: #1a1208;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 600;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 0 7px rgba(224, 160, 82, 0.5);
+}
+.dock__user {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(157, 108, 240, 0.5);
+  background: rgba(157, 108, 240, 0.14);
+  color: #b794f0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  margin-left: 4px;
+}
+.dock__user:hover {
+  border-color: rgba(157, 108, 240, 0.8);
+  color: #cbb4f5;
+}
+.dock__user-row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+.dock__user-name {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--tx-2);
+  letter-spacing: 0.02em;
+  opacity: 0;
+  transition: opacity 0.16s ease 0.02s;
+}
+.dock:hover .dock__user-name {
+  opacity: 1;
+}
+.dock__user-name small {
+  color: var(--tx-4);
+  font-size: 9px;
+}
