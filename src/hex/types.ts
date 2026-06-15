@@ -14,15 +14,18 @@ export interface NodeDatum {
   off?: boolean;
   /** Needs attention (thermal/throttle). Rendered with the alert badge + pulse. */
   crit?: boolean;
+  /** Dimmed by an active filter (e.g. namespace mismatch). */
+  dim?: boolean;
 }
 
 /** Visual mode a hex renders in, derived from node data. */
-export type HexState = "off" | "rest" | "active";
+export type HexState = "off" | "rest" | "active" | "hidden";
 
 /** Utilization below this reads as "at rest" and collapses to the muted glyph. */
 export const REST_THRESHOLD = 1;
 
 export function hexState(node: NodeDatum): HexState {
+  if (node.dim) return "hidden";
   if (node.off) return "off";
   return node.util < REST_THRESHOLD ? "rest" : "active";
 }

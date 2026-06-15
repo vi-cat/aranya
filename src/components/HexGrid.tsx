@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import styles from "./HexGrid.module.css";
 import Hex from "./Hex";
-import { HEX_H, HEX_W, layoutSpiral } from "../hex/geometry";
+import { HEX_H, HEX_W, axialKey, hexSpiral, hexesInBox } from "../hex/geometry";
 import type { NodeDatum } from "../hex/types";
 
 interface HexGridProps {
@@ -19,9 +19,10 @@ const gridStyle = {
 } as CSSProperties;
 
 /**
- * Lays out tiles as a centred spiral honeycomb. Controlled: the parent owns selection and
- * decides what a click means (drill in vs. select). HexGrid only measures its box so the
- * cluster re-centres on resize, and positions each Hex.
+ * One saturated honeycomb. Every cell that covers the viewport is rendered; the central
+ * cells carry data (a centred blob, in `hexSpiral` order) and the rest are inert ghost cells.
+ * Controlled: the parent owns selection and decides what a click means (drill in vs. select).
+ * HexGrid only measures its box so the lattice re-centres on resize, and positions each cell.
  */
 export default function HexGrid({ nodes, selectedId, onSelect }: HexGridProps) {
   const ref = useRef<HTMLDivElement>(null);
@@ -37,27 +38,35 @@ export default function HexGrid({ nodes, selectedId, onSelect }: HexGridProps) {
     return () => ro.disconnect();
   }, []);
 
-  // Layout depends only on tile count + box size — not the node data itself.
-  const placed = useMemo(
-    () => layoutSpiral(nodes.length, size.w, size.h),
-    [nodes.length, size],
-  );
+  // Every visible cell — depends only on the box size, not the data. (The virtualized set.)
+  const cells = useMemo(() => hexesInBox(size.w, size.h), [size]);
+
+  // Pin each datum to a central spiral cell, keyed by axial coord for O(1) lookup below.
+  const dataByCell = useMemo(() => {
+    const spiral = hexSpiral(nodes.length);
+    const map = new Map<string, NodeDatum>();
+    spiral.forEach((axial, i) => map.set(axialKey(axial), nodes[i]));
+    return map;
+  }, [nodes]);
 
   return (
     <div ref={ref} className={styles["hex-grid"]} style={gridStyle}>
-      {size.w > 0 &&
-        nodes.map((node, i) => (
+      {cells.map(({ axial, x, y }) => {
+        const position = { left: x - HEX_W / 2, top: y - HEX_H / 2 };
+        const node = dataByCell.get(axialKey(axial));
+        return node ? (
           <Hex
             key={node.id}
             node={node}
             selected={selectedId === node.id}
             onSelect={onSelect}
-            style={{
-              left: placed[i].x - HEX_W / 2,
-              top: placed[i].y - HEX_H / 2,
-            }}
+            style={position}
           />
-        ))}
+        ) : (
+          // No data → a base Hex renders the inert ghost wireframe.
+          <Hex key={`g:${axial.q},${axial.r}`} style={position} />
+        );
+      })}
     </div>
   );
 }

@@ -27,8 +27,9 @@ export default function ClusterMap({
   activeNode,
   onActiveNodeChange,
 }: ClusterMapProps) {
-  const { data, error } = cluster;
+  const { data, error, namespaces } = cluster;
   const [openPod, setOpenPod] = useState<ClusterPod | null>(null);
+  const [namespaceFilter, setNamespaceFilter] = useState("");
 
   const nodes = data?.nodes ?? NO_NODES;
   const pods = useMemo(
@@ -37,10 +38,15 @@ export default function ClusterMap({
   );
 
   // cluster overview → node tiles; drilled into a node → its pod tiles
-  const tiles = useMemo(
-    () => (activeNode ? pods.map(podToTile) : nodes.map(nodeToTile)),
-    [activeNode, nodes, pods],
-  );
+  // In pod view, dim tiles whose namespace doesn't match the active filter.
+  const tiles = useMemo(() => {
+    if (!activeNode) return nodes.map(nodeToTile);
+    const filter = namespaceFilter;
+    return pods.map((pod) => ({
+      ...podToTile(pod),
+      dim: filter.length > 0 && pod.namespace !== filter,
+    }));
+  }, [activeNode, nodes, pods, namespaceFilter]);
 
   const onSelect = (id: string) => {
     if (activeNode === null) {
@@ -66,10 +72,25 @@ export default function ClusterMap({
           onClick={() => {
             onActiveNodeChange(null);
             setOpenPod(null);
+            setNamespaceFilter("");
           }}
         >
           ← Cluster
         </button>
+      )}
+
+      {activeNode !== null && (
+        <select
+          className={styles["cluster-map__ns-filter"]}
+          value={namespaceFilter}
+          onChange={(e) => setNamespaceFilter(e.target.value)}
+          aria-label="Filter pods by namespace"
+        >
+          <option value="">All namespaces</option>
+          {namespaces.map((ns) => (
+            <option key={ns} value={ns}>{ns}</option>
+          ))}
+        </select>
       )}
 
       {error && (

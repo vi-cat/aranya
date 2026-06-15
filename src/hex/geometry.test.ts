@@ -1,11 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
+  axialKey,
   axialToPixel,
   HEX_H,
   HEX_SIZE,
   HEX_W,
+  hexesInBox,
   hexSpiral,
-  layoutSpiral,
   type Axial,
 } from "./geometry";
 
@@ -102,33 +103,46 @@ describe("axialToPixel", () => {
   });
 });
 
-describe("layoutSpiral", () => {
-  it("returns nothing for non-positive counts", () => {
-    expect(layoutSpiral(0, 800, 600)).toEqual([]);
+describe("hexesInBox", () => {
+  it("returns nothing for a zero-area box", () => {
+    expect(hexesInBox(0, 600)).toEqual([]);
+    expect(hexesInBox(800, 0)).toEqual([]);
   });
 
-  it("centres a single tile in the box", () => {
-    const [tile] = layoutSpiral(1, 800, 600);
-    expect(tile.x).toBeCloseTo(400);
-    expect(tile.y).toBeCloseTo(300);
+  it("pins axial (0,0) at the box centre", () => {
+    const centre = hexesInBox(800, 600).find((c) => c.axial.q === 0 && c.axial.r === 0);
+    expect(centre).toBeDefined();
+    expect(centre!.x).toBeCloseTo(400);
+    expect(centre!.y).toBeCloseTo(300);
   });
 
-  it("preserves spiral order / axial coords from hexSpiral", () => {
-    const placed = layoutSpiral(10, 800, 600);
-    expect(placed.map((p) => p.axial)).toEqual(hexSpiral(10));
+  it("re-centres when the box size changes", () => {
+    const centre = hexesInBox(1000, 400).find((c) => c.axial.q === 0 && c.axial.r === 0);
+    expect(centre!.x).toBeCloseTo(500);
+    expect(centre!.y).toBeCloseTo(200);
   });
 
-  it("centres the cluster bounding box in the box (full ring)", () => {
-    const placed = layoutSpiral(7, 800, 600);
-    const xs = placed.map((p) => p.x);
-    const ys = placed.map((p) => p.y);
-    expect((Math.min(...xs) + Math.max(...xs)) / 2).toBeCloseTo(400);
-    expect((Math.min(...ys) + Math.max(...ys)) / 2).toBeCloseTo(300);
+  it("saturates the box — cells reach beyond all four edges", () => {
+    const W = 800;
+    const H = 600;
+    const cells = hexesInBox(W, H);
+    const xs = cells.map((c) => c.x);
+    const ys = cells.map((c) => c.y);
+    expect(Math.min(...xs)).toBeLessThanOrEqual(0);
+    expect(Math.max(...xs)).toBeGreaterThanOrEqual(W);
+    expect(Math.min(...ys)).toBeLessThanOrEqual(0);
+    expect(Math.max(...ys)).toBeGreaterThanOrEqual(H);
   });
 
-  it("recentres when the container size changes", () => {
-    const [a] = layoutSpiral(1, 1000, 400);
-    expect(a.x).toBeCloseTo(500);
-    expect(a.y).toBeCloseTo(200);
+  it("never repeats a cell", () => {
+    const cells = hexesInBox(1280, 720);
+    expect(new Set(cells.map((c) => axialKey(c.axial))).size).toBe(cells.length);
+  });
+
+  it("contains every central data cell (spiral keys ⊆ viewport set)", () => {
+    const viewport = new Set(hexesInBox(1280, 720).map((c) => axialKey(c.axial)));
+    for (const a of hexSpiral(60)) {
+      expect(viewport.has(axialKey(a))).toBe(true);
+    }
   });
 });

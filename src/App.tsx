@@ -1,5 +1,4 @@
 import { useState } from "react";
-import MapBackground from "./components/MapBackground";
 import ClusterMap from "./components/ClusterMap";
 import OsDock from "./components/OsDock";
 import TopBar from "./components/TopBar";
@@ -21,13 +20,11 @@ function App() {
 
   return (
     <>
-      <MapBackground>
-        <ClusterMap
-          cluster={cluster}
-          activeNode={activeNode}
-          onActiveNodeChange={setActiveNode}
-        />
-      </MapBackground>
+      <ClusterMap
+        cluster={cluster}
+        activeNode={activeNode}
+        onActiveNodeChange={setActiveNode}
+      />
       <OsDock />
       <TopBar cluster={cluster} crumbs={crumbs} />
     </>

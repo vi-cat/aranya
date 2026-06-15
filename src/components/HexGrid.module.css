@@ -1,9 +1,15 @@
 /* The hex layer. Inset to clear the dock + top bar so the centred blob never tucks
-   under the chrome. Tile dimensions come in as custom properties from JS. */
+   under the chrome. Tile dimensions come in as custom properties from JS. The grid
+   saturates this box (data centre + ghost cells around it); the radial mask fades the
+   ghosts at the edges so it reads as a centred cluster, not a hard rectangle of hexes.
+   The ghost + data tiles share one base style — see Hex.module.css. */
 .hex-grid {
   position: absolute;
   top: var(--topbar-h, 46px);
   right: 0;
   bottom: 0;
   left: var(--dock-w, 64px);
+  overflow: hidden;
+  mask-image: radial-gradient(80% 70% at 42% 42%, #000 30%, transparent 100%);
+  -webkit-mask-image: radial-gradient(80% 70% at 42% 42%, #000 30%, transparent 100%);
 }

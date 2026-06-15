@@ -6,27 +6,37 @@ import { heatBand } from "../hex/heat";
 import { hexState, type NodeDatum } from "../hex/types";
 
 interface HexProps {
-  node: NodeDatum;
-  selected: boolean;
-  onSelect: (id: string) => void;
+  /** Cluster entity for this tile. Omit to render an inert ghost cell (the base wireframe). */
+  node?: NodeDatum;
+  selected?: boolean;
+  onSelect?: (id: string) => void;
   /** Layout-owned position (left/top) from HexGrid. */
   style?: CSSProperties;
 }
 
 /**
- * A single cluster node as a heat-coloured hex tile. Purely presentational: a band class
- * picks the colour, the content depends on state, and selection/position come in as props.
+ * A cluster node as a heat-coloured hex tile. With no `node` it falls back to the base hex
+ * styling — an inert ghost outline — so the same component fills the whole saturated lattice.
+ * Purely presentational: `hex--tile` + a band class add the fill, content depends on state,
+ * and selection/position come in as props.
  */
-export default function Hex({ node, selected, onSelect, style }: HexProps) {
+export default function Hex({ node, selected = false, onSelect, style }: HexProps) {
+  // No data → the base hex is already the ghost wireframe; render it inert.
+  if (!node) {
+    return <div className={styles.hex} style={style} aria-hidden="true" />;
+  }
+
   const state = hexState(node);
   const band = heatBand(node);
   const label = node.label ?? node.id;
 
   const className = [
     styles.hex,
+    styles["hex--tile"],
     styles[`hex--${band}`],
     state === "rest" && styles["hex--rest"],
     selected && styles["hex--selected"],
+    state === "hidden" && styles["hex--hidden"],
   ]
     .filter(Boolean)
     .join(" ");
@@ -37,42 +47,46 @@ export default function Hex({ node, selected, onSelect, style }: HexProps) {
       className={className}
       style={style}
       title={label}
-      disabled={state === "off"}
-      onClick={() => onSelect(node.id)}
+      disabled={state === "off" || state === "hidden"}
+      onClick={() => onSelect?.(node.id)}
     >
-      <span className={styles["hex__id"]}>{label}</span>
+      {state !== "hidden" && (
+        <>
+          <span className={styles["hex__id"]}>{label}</span>
 
-      {state === "off" && <span className={styles["hex__util"]}>OFFLINE</span>}
+          {state === "off" && <span className={styles["hex__util"]}>OFFLINE</span>}
 
-      {/* details — shown for active tiles, and revealed on hover for idle ("at rest") tiles */}
-      {state !== "off" && (
-        <span className={styles["hex__body"]}>
-          <span className={styles["hex__util"]}>
-            {node.util}
-            <span className={styles["hex__pct"]}>%</span>
-          </span>
-          <span className={styles["hex__sub"]}>
-            {node.temp != null && (
-              <>
-                {node.temp}°<span className={styles["hex__dot"]}>/</span>
-              </>
-            )}
-            {node.mem}G
-          </span>
-        </span>
-      )}
+          {/* details — shown for active tiles, and revealed on hover for idle ("at rest") tiles */}
+          {state !== "off" && (
+            <span className={styles["hex__body"]}>
+              <span className={styles["hex__util"]}>
+                {node.util}
+                <span className={styles["hex__pct"]}>%</span>
+              </span>
+              <span className={styles["hex__sub"]}>
+                {node.temp != null && (
+                  <>
+                    {node.temp}°<span className={styles["hex__dot"]}>/</span>
+                  </>
+                )}
+                {node.mem}G
+              </span>
+            </span>
+          )}
 
-      {/* at-rest glyph, hidden on hover so the details show through */}
-      {state === "rest" && (
-        <span className={styles["hex__glyph"]}>
-          <EyeClosedIcon />
-        </span>
-      )}
+          {/* at-rest glyph, hidden on hover so the details show through */}
+          {state === "rest" && (
+            <span className={styles["hex__glyph"]}>
+              <EyeClosedIcon />
+            </span>
+          )}
 
-      {selected && (
-        <span className={styles["hex__ring"]}>
-          <HexRingIcon />
-        </span>
+          {selected && (
+            <span className={styles["hex__ring"]}>
+              <HexRingIcon />
+            </span>
+          )}
+        </>
       )}
     </button>
   );

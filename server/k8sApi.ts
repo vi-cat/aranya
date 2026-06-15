@@ -137,6 +137,14 @@ async function getClusterData() {
   };
 }
 
+async function getNamespaces(): Promise<string[]> {
+  const res = await core().listNamespace();
+  return res.items
+    .map((ns) => ns.metadata?.name ?? "")
+    .filter(Boolean)
+    .sort();
+}
+
 // multi-container pods require an explicit container; default to the first one
 async function firstContainer(namespace: string, name: string): Promise<string | undefined> {
   const pod = await core().readNamespacedPod({ name, namespace });
@@ -193,6 +201,9 @@ export function k8sApiPlugin(): Plugin {
         const handle = async () => {
           if (path === "/api/cluster") {
             return sendJson(res, 200, await getClusterData());
+          }
+          if (path === "/api/namespaces") {
+            return sendJson(res, 200, await getNamespaces());
           }
           const m = /^\/api\/pods\/([^/]+)\/([^/]+)\/logs$/.exec(path);
           if (m) {
